@@ -1,0 +1,411 @@
+:root {
+    --bg-color: #ffffff;
+    --text-primary: #121212;
+    --text-secondary: #888888;
+    --accent-color: #0044ff;
+    --border-color: #e6e6e6;
+    --font-heading: 'Bodoni Moda', serif;
+    --font-body: 'Space Grotesk', sans-serif;
+    --easing: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Lenis Recommended */
+html.lenis,
+body.lenis {
+    height: auto;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Custom Cursor */
+.cursor-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--text-primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.cursor-outline {
+    width: 50px;
+    height: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+/* Container */
+.app-container {
+    width: 100%;
+    max-width: 1600px;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.layout-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 4rem;
+}
+
+@media (min-width: 1024px) {
+    .layout-grid {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        /* 40% Left, 60% Right */
+        gap: 6rem;
+        align-items: center;
+    }
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    /* Bolder */
+    font-size: clamp(3.5rem, 9vw, 11rem);
+    /* Increased slightly for Bodoni's elegance */
+    text-transform: uppercase;
+    line-height: 0.85;
+    /* Tighter leading for serif headings */
+    letter-spacing: -0.04em;
+    padding: 0.1em 0;
+}
+
+.hero-title .highlight {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--text-primary);
+    /* Keeps outline style */
+    font-style: italic;
+    /* Luxury Italic Touch */
+    position: relative;
+    display: inline-block;
+    padding-right: 0.1em;
+    /* Adjust for italic slant */
+}
+
+/* Tablet & Mobile Layout (>1024 is Grid, else Stack) */
+@media (max-width: 1024px) {
+    .app-container {
+        padding: 1.5rem;
+        gap: 3rem;
+        justify-content: flex-start;
+        /* Don't center vertically on long mobile scrolls */
+        padding-top: 4rem;
+    }
+
+    .layout-grid {
+        display: flex;
+        /* Stack */
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .interaction-area {
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-top: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dropdown-trigger {
+        font-size: 1.2rem;
+        /* Smaller touch target text */
+    }
+
+    .styled-input {
+        font-size: 1.5rem;
+    }
+
+    .cta-button {
+        width: 100%;
+        /* Full width button on mobile */
+        padding: 1.2rem;
+    }
+}
+
+.hero-title span {
+    display: block;
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hero-subtitle::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background-color: var(--text-secondary);
+}
+
+/* Interaction Area */
+.interaction-area {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding-left: 2rem;
+    /* Visual separation */
+    border-left: 1px solid var(--border-color);
+}
+
+@media (max-width: 1024px) {
+    .interaction-area {
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        padding-top: 4rem;
+    }
+}
+
+/* Selector */
+.input-label {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+/* Custom Dropdown */
+.custom-dropdown-container {
+    position: relative;
+    width: 100%;
+    font-family: var(--font-body);
+}
+
+.dropdown-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.5rem;
+    font-weight: 500;
+    /* Space Grotesk looks good slightly bolder */
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.dropdown-trigger:hover {
+    border-bottom-color: var(--text-primary);
+}
+
+.dropdown-arrow {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--text-primary);
+    border-bottom: 2px solid var(--text-primary);
+    transform: rotate(45deg);
+    transition: transform 0.3s;
+}
+
+.dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s var(--easing);
+}
+
+.dropdown-options.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-option {
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s, padding-left 0.2s;
+}
+
+.dropdown-option:hover {
+    background: #f5f5f5;
+    padding-left: 2.5rem;
+    /* Slide effect */
+}
+
+/* Form Styles */
+.form-container {
+    min-height: 200px;
+}
+
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.input-group {
+    position: relative;
+}
+
+.styled-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+    font-family: var(--font-body);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-primary);
+    transition: all 0.5s var(--easing);
+}
+
+.styled-input:focus {
+    outline: none;
+    border-bottom-color: var(--text-primary);
+    padding-left: 20px;
+    /* Subtle movement on focus */
+}
+
+.styled-input::placeholder {
+    color: #d1d1d1;
+    font-weight: 300;
+}
+
+/* Button */
+.action-wrapper {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    /* Centered */
+}
+
+.cta-button {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-primary);
+    border-radius: 100px;
+    padding: 1.5rem 3rem;
+    font-family: var(--font-body);
+    /* Switch to body font for modern cleaner look, or keep heading */
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.3s;
+}
+
+.cta-button:hover {
+    color: var(--bg-color);
+    border-color: transparent;
+}
+
+.btn-fill {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 350%;
+    /* Large enough to cover */
+    background: var(--text-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.6s var(--easing);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cta-button:hover .btn-fill {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.cta-button span {
+    position: relative;
+    z-index: 2;
+}
+
+/* Animations */
+.reveal-text {
+    will-change: transform, opacity;
+}
+
+/* Preloader */
+.preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 10000;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 2rem;
+    pointer-events: none;
+    /* Let clicks pass through once fading */
+}
+
+.counter {
+    font-family: var(--font-heading);
+    font-size: 12vw;
+    /* Responsive base size */
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
