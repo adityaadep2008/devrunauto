@@ -5,7 +5,7 @@ REM Enforces Python 3.10, checks ADB, and installs dependencies.
 set VENV_DIR=venv
 
 echo ===================================================
-echo      DroidRun Commerce Agent - Setup & Run
+echo      DroidRun Commerce Agent - Setup and Run
 echo ===================================================
 
 echo.
