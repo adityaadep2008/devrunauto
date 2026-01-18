@@ -44,17 +44,20 @@ class RideComparisonAgent:
         except:
             return float('inf')
 
-    async def execute_task(self, app_name: str, pickup: str, drop: str) -> dict:
+    async def execute_task(self, app_name: str, pickup: str, drop: str, preference: str = "cab") -> dict:
         """
-        Executes a ride check task on a specific app.
+        Executes a ride check task on a specific app with preference filtering.
         """
-        print(f"\n[RideAgent] Initializing Task for: {app_name}")
+        print(f"\n[RideAgent] Initializing Task for: {app_name} (Preference: {preference})")
         
-        # Define Goal with specific instructions for each app and permission handling
-        if app_name.lower() == "uber":
-            ride_types = "Uber Go and Uber Moto"
-        else:
-            ride_types = "Ola Mini, Ola Auto, or Bike"
+        # Define Goal with specific instructions based on preference
+        target_rides = ""
+        if preference == "auto":
+             target_rides = "Auto, Rickshaw, or Uber Auto"
+        elif preference == "sedan":
+             target_rides = "Prime Sedan, Uber Premier, or Intercity"
+        else: # Default or 'cab'
+             target_rides = "Uber Go, Ola Mini, or most affordable Cab"
 
         goal = (
             f"Open the app '{app_name}'. "
@@ -63,8 +66,9 @@ class RideComparisonAgent:
             f"Enter pickup location: '{pickup}'. "
             f"Enter destination: '{drop}'. "
             f"Wait for the ride options to load. "
-            f"Visually SCAN the ride options for {ride_types}. "
-            f"Extract the ride type, price, and ETA. "
+            f"Visually SCAN for '{target_rides}'. "
+            f"If '{preference}' is available, prioritized it. "
+            f"Extract the ride type, price, and ETA for the BEST matching option. "
             f"Return a strict JSON object with keys: 'app', 'ride_type', 'price', 'eta'. "
             f"Ensure strict JSON format."
         )
@@ -149,12 +153,12 @@ class RideComparisonAgent:
             print(f"[Error] Task Execution Failed for {app_name}: {e}")
             return result_data
 
-    async def compare_rides(self, pickup, drop):
+    async def compare_rides(self, pickup, drop, preference="cab"):
         apps = ["Uber", "Ola"]
         results = {}
 
         for app in apps:
-            res = await self.execute_task(app, pickup, drop)
+            res = await self.execute_task(app, pickup, drop, preference)
             results[app] = res
             # Cooldown to allow app switching/closing
             await asyncio.sleep(3)
@@ -188,11 +192,12 @@ async def main():
     parser = argparse.ArgumentParser(description="Ride Comparison Agent (Uber vs Ola)")
     parser.add_argument("--pickup", required=True, help="Pickup location")
     parser.add_argument("--drop", required=True, help="Drop location")
+    parser.add_argument("--preference", default="cab", choices=["cab", "auto", "sedan"], help="Preferred ride type")
     args = parser.parse_args()
 
     # Use models/gemini-2.5-flash as per new standard
     agent = RideComparisonAgent(model="models/gemini-2.5-flash")
-    await agent.compare_rides(args.pickup, args.drop)
+    await agent.compare_rides(args.pickup, args.drop, args.preference)
 
 if __name__ == "__main__":
     if sys.platform == 'win32':
