@@ -1,3 +1,6 @@
 droidrun
 python-dotenv
 argparse
+fastapi
+uvicorn
+websockets

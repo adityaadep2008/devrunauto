@@ -44,34 +44,46 @@ class RideComparisonAgent:
         except:
             return float('inf')
 
-    async def execute_task(self, app_name: str, pickup: str, drop: str, preference: str = "cab") -> dict:
+    async def execute_task(self, app_name: str, pickup: str, drop: str, action: str = "compare") -> dict:
         """
-        Executes a ride check task on a specific app with preference filtering.
+        Executes a ride check task on a specific app.
+        Action: 'compare' (view prices) or 'book' (book cheapest ride via Cash).
         """
-        print(f"\n[RideAgent] Initializing Task for: {app_name} (Preference: {preference})")
+        print(f"\n[RideAgent] Initializing Task for: {app_name} (Action: {action})")
         
-        # Define Goal with specific instructions based on preference
-        target_rides = ""
-        if preference == "auto":
-             target_rides = "Auto, Rickshaw, or Uber Auto"
-        elif preference == "sedan":
-             target_rides = "Prime Sedan, Uber Premier, or Intercity"
-        else: # Default or 'cab'
-             target_rides = "Uber Go, Ola Mini, or most affordable Cab"
+        # Define Goal with specific instructions for each app and permission handling
+        if app_name.lower() == "uber":
+            ride_types = "Uber Go and Uber Moto"
+        else:
+            ride_types = "Ola Mini, Ola Auto, or Bike"
 
-        goal = (
-            f"Open the app '{app_name}'. "
-            f"If a 'Location Permission' popup appears, click 'While using the app' or 'Allow'. "
-            f"Click on 'Ride' or the search bar to start a booking. "
-            f"Enter pickup location: '{pickup}'. "
-            f"Enter destination: '{drop}'. "
-            f"Wait for the ride options to load. "
-            f"Visually SCAN for '{target_rides}'. "
-            f"If '{preference}' is available, prioritized it. "
-            f"Extract the ride type, price, and ETA for the BEST matching option. "
-            f"Return a strict JSON object with keys: 'app', 'ride_type', 'price', 'eta'. "
-            f"Ensure strict JSON format."
-        )
+        if action == "book":
+            goal = (
+                f"Open the app '{app_name}'. "
+                f"If a 'Location Permission' popup appears, click 'While using the app' or 'Allow'. "
+                f"Click on 'Ride' or the search bar. "
+                f"Enter pickup location: '{pickup}'. "
+                f"Enter destination: '{drop}'. "
+                f"Wait for ride options. "
+                f"Select the CHEAPEST available ride (e.g., Moto or Mini). "
+                f"Click 'Book' or 'Confirm'. "
+                f"Change Payment Method to 'Cash' if not already selected. "
+                f"Click 'Confirm Booking' or 'Request Ride'. "
+                f"Return a strict JSON object with keys: 'status' (success/failed), 'driver_details' (if visible), 'eta'. "
+            )
+        else:
+            goal = (
+                f"Open the app '{app_name}'. "
+                f"If a 'Location Permission' popup appears, click 'While using the app' or 'Allow'. "
+                f"Click on 'Ride' or the search bar to start a booking. "
+                f"Enter pickup location: '{pickup}'. "
+                f"Enter destination: '{drop}'. "
+                f"Wait for the ride options to load. "
+                f"Visually SCAN the ride options for {ride_types}. "
+                f"Extract the ride type, price, and ETA. "
+                f"Return a strict JSON object with keys: 'app', 'ride_type', 'price', 'eta'. "
+                f"Ensure strict JSON format."
+            )
 
         # --- Professional Config Setup ---
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
@@ -187,6 +199,35 @@ class RideComparisonAgent:
             print("\n❌ Could not determine best deal.")
         
         return results
+
+    async def book_cheapest_ride(self, pickup, drop):
+        """
+        High-level method to Find Cheapest -> Book It.
+        """
+        print(f"\n[RideAgent] 🤖 Autonomous Booking Sequence Initiated...")
+        
+        # 1. Compare
+        results = await self.compare_rides(pickup, drop)
+        best_deal = results.get("best_deal")
+        
+        if not best_deal:
+            print("[Error] No valid rides found to book.")
+            return None
+        
+        target_app = best_deal['app']
+        price = best_deal['data'].get('price')
+        print(f"[RideAgent] 🏆 Best Deal identified: {target_app} @ {price}. Proceeding to BOOK...")
+        
+        # 2. Book
+        booking_result = await self.execute_task(target_app, pickup, drop, action="book")
+        
+        print(f"\n[RideAgent] Booking Status for {target_app}: {booking_result.get('status')}")
+        if booking_result.get('status') == 'success':
+             print(f"✅ Cab Booked! Driver Details: {booking_result['data'].get('driver_details')}")
+        else:
+             print("❌ Booking Failed.")
+
+        return booking_result
 
 async def main():
     parser = argparse.ArgumentParser(description="Ride Comparison Agent (Uber vs Ola)")

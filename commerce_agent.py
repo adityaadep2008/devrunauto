@@ -44,29 +44,43 @@ class CommerceAgent:
         except:
             return float('inf')
 
-    async def execute_task(self, app_name: str, query: str, item_type: str) -> dict:
+    async def execute_task(self, app_name: str, query: str, item_type: str, action: str = "search") -> dict:
         """
         Spawns a DroidAgent to execute a specific commerce task.
         Uses Vision capabilities for better UI understanding.
+        Action: 'search' (compare prices) or 'order' (buy item via COD).
         """
-        print(f"\n[CommerceAgent] Initializing Task for: {app_name}")
+        print(f"\n[CommerceAgent] Initializing Task for: {app_name} (Action: {action})")
         
         # 1. Define Goal (Natural Language with Structural Constraints)
-        goal = (
-            f"Open the app '{app_name}'. "
-            f"Search for '{query}'. "
-            f"Wait for the search results to load. "
-            f"Visually SCAN the search results. "
-            f"Identify multiple items matching '{query}'. "
-            f"COMPARE their prices and Select the CHEAPEST option. "
-            f"Extract the following details for the CHEAPEST item: "
-            f"1. Product Name (title) "
-            f"2. Price (numeric value) "
-            f"3. Rating "
-            f"4. Restaurant Name "
-            f"Return a strict JSON object with keys: 'title', 'price', 'rating', 'restaurant'. "
-            f"If no exact match is found, find the closest match. "
-        )
+        if action == "order":
+            goal = (
+                f"Open the app '{app_name}'. "
+                f"Search for '{query}'. "
+                f"Select the first relevant item. "
+                f"Click 'Add' or 'Add to Cart'. "
+                f"Go to View Cart / Checkout. "
+                f"Proceed to Pay. "
+                f"Select 'Cash on Delivery' (COD) or 'Pay on Delivery' as payment method. "
+                f"Click 'Place Order' or 'Confirm Order'. "
+                f"Return a strict JSON object with keys: 'status' (success/failed), 'order_id' (if visible), 'final_price'. "
+            )
+        else:
+            goal = (
+                f"Open the app '{app_name}'. "
+                f"Search for '{query}'. "
+                f"Wait for the search results to load. "
+                f"Visually SCAN the search results. "
+                f"Identify multiple items matching '{query}'. "
+                f"COMPARE their prices and Select the CHEAPEST option. "
+                f"Extract the following details for the CHEAPEST item: "
+                f"1. Product Name (title) "
+                f"2. Price (numeric value) "
+                f"3. Rating "
+                f"4. Restaurant Name "
+                f"Return a strict JSON object with keys: 'title', 'price', 'rating', 'restaurant'. "
+                f"If no exact match is found, find the closest match. "
+            )
 
         # 2. Configure Agent (Professional Pattern)
         # Using Vision for robustness against custom UI (Flutter/React Native)

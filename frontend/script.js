@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = {
         shopper: document.getElementById('form-shopper'),
         rider: document.getElementById('form-rider'),
-        patient: document.getElementById('form-patient')
+        patient: document.getElementById('form-patient'),
+        coordinator: document.getElementById('form-coordinator')
     };
     const findDealBtn = document.getElementById('find-deal-btn');
     const cursorDot = document.querySelector('.cursor-dot');
@@ -243,6 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.drop = document.getElementById('drop-location').value;
         } else if (persona === 'patient') {
             payload.medicine = document.getElementById('medicine-name').value;
+        } else if (persona === 'coordinator') {
+            payload.event_name = document.getElementById('event-name').value;
+            // Simple logic for single guest demo
+            const gName = document.getElementById('guest-name').value;
+            const gPhone = document.getElementById('guest-phone').value;
+            if (gName) {
+                payload.guest_list = [{ name: gName, phone: gPhone }];
+            }
         }
 
         logStatus(`Starting sequence for ${persona}...`);

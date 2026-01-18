@@ -59,6 +59,7 @@
                             <div class="dropdown-option" data-value="shopper">Shopper</div>
                             <div class="dropdown-option" data-value="rider">Rider</div>
                             <div class="dropdown-option" data-value="patient">Patient</div>
+                            <div class="dropdown-option" data-value="coordinator">Event Coordinator</div>
                         </div>
                     </div>
                 </div>
@@ -90,7 +91,20 @@
                     <div class="form-content hidden" id="form-patient">
                         <div class="input-group">
                             <label for="medicine-name" class="input-label">Prescription</label>
-                            <input type="text" id="medicine-name" class="styled-input" placeholder="Medication Name">
+                            <input type="text" id="medicine-name" placeholder="e.g. Dolo 650" class="input-field">
+                        </div>
+                    </div>
+
+                    <!-- Coordinator Form -->
+                    <div id="form-coordinator" class="form-content hidden">
+                        <div class="input-group">
+                            <label class="input-label">Event Name</label>
+                            <input type="text" id="event-name" placeholder="Birthday Bash" class="input-field">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Guest (Demo)</label>
+                            <input type="text" id="guest-name" placeholder="Name" class="input-field" style="margin-bottom: 10px;">
+                            <input type="text" id="guest-phone" placeholder="Phone" class="input-field">
                         </div>
                     </div>
                 </div>
