@@ -4,7 +4,7 @@
     --text-secondary: #888888;
     --accent-color: #0044ff;
     --border-color: #e6e6e6;
-    --font-heading: 'Italiana', serif;
+    --font-heading: 'Outfit', sans-serif;
     --font-body: 'Outfit', sans-serif;
     --easing: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -74,8 +74,8 @@ body {
 
 .hero-title {
     font-family: var(--font-heading);
-    font-weight: 400;
-    /* Italiana is naturally bold enough, keeping it regular for elegance */
+    font-weight: 800;
+    /* Bold and Simple */
     /* Bolder */
     font-size: clamp(2.5rem, 7vw, 9rem);
     /* Lowered min to 2.5rem for small phones */

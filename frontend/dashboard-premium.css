@@ -5,16 +5,16 @@
     --accent-color: #000000;
     --border-color: rgba(0, 0, 0, 0.1);
     --card-bg: #f8f8f8;
-    --font-heading: 'Bodoni Moda', serif;
-    --font-body: 'Space Grotesk', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Outfit', sans-serif;
 }
 
 .dashboard-body {
     background-color: var(--bg-color);
     color: var(--text-color);
     overflow-x: hidden;
-    cursor: none;
-    /* Custom cursor */
+    overflow-x: hidden;
+    /* Cursor restored */
 }
 
 #ambient-bg {
@@ -71,7 +71,8 @@
 
 .dashboard-header h1 {
     font-family: var(--font-heading);
-    font-weight: 400;
+    font-weight: 800;
+    /* Bold and Simple */
     font-size: 2.5rem;
     margin: 0;
     letter-spacing: -0.02em;
@@ -156,8 +157,8 @@
     background: var(--card-bg);
     border: 1px solid transparent;
     padding: 2.5rem;
-    cursor: none;
-    /* Use custom cursor */
+    padding: 2.5rem;
+    /* Standard cursor */
     position: relative;
     overflow: hidden;
     transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
@@ -323,34 +324,4 @@
     border: 2px solid rgba(0, 0, 0, 0.1);
     transform: rotate(45deg);
     margin-bottom: 1rem;
-}
-
-/* Custom Cursor */
-.cursor-dot,
-.cursor-outline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: #000;
-}
-
-.cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-body:hover .cursor-outline {
-    width: 40px;
-    height: 40px;
 }

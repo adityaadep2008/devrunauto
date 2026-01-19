@@ -155,6 +155,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function switchForm(persona) {
+        // Dynamic Button Text
+        const btnText = findDealBtn.querySelector('.btn-text');
+        let newText = "Find Best Deal";
+
+        if (persona === 'traveller') {
+            newText = "Plan Best Trip";
+        } else if (persona === 'rider') {
+            newText = "Find Best Ride";
+        }
+
+        // Smooth Text Transition
+        if (btnText.textContent !== newText) {
+            gsap.to(btnText, {
+                duration: 0.2,
+                opacity: 0,
+                onComplete: () => {
+                    btnText.textContent = newText;
+                    gsap.to(btnText, { duration: 0.2, opacity: 1 });
+                }
+            });
+        }
+
         // Animate out current forms
         const currentVisible = formContainer.querySelector('.form-content:not(.hidden)');
         if (currentVisible) {
