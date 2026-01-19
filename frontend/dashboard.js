@@ -247,28 +247,38 @@ document.addEventListener('DOMContentLoaded', () => {
             consoleOutput.innerHTML = '<div class="log-line system">> Waiting for Uplink...</div>';
         }
 
+        // Show Result if done
         if (task.status === 'success' || task.status === 'failed') {
             showResult(task.result);
+            resultArea.classList.remove('hidden');
         } else {
             resultArea.classList.add('hidden');
         }
 
         // Modal Entrance Animation
         modal.classList.remove('hidden');
-        gsap.fromTo('.modal-content',
-            { y: 50, opacity: 0, scale: 0.95 },
-            { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }
-        );
+        // IMPORTANT: Add 'active' to ensure opacity is 1 and pointer-events auto
+        // Use timeout to allow display:flex to apply first
+        requestAnimationFrame(() => {
+            modal.classList.add('active');
+            gsap.fromTo('.modal-content',
+                { x: '100%' },
+                { x: '0%', duration: 0.5, ease: "power3.out" }
+            );
+        });
 
-        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        setTimeout(() => consoleOutput.scrollTop = consoleOutput.scrollHeight, 100);
     }
 
     function closeModal() {
         gsap.to('.modal-content', {
-            y: 50, opacity: 0, scale: 0.95, duration: 0.3, ease: "power3.in",
+            x: '100%', duration: 0.3, ease: "power3.in",
             onComplete: () => {
-                modal.classList.add('hidden');
-                activeTaskId = null;
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    activeTaskId = null;
+                }, 300); // Wait for CSS transition if any
             }
         });
     }
@@ -283,13 +293,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const line = document.createElement('div');
         line.className = 'log-line';
 
+        let icon = '<span>></span>';
         if (message.includes('Error') || message.includes('failed') || message.includes('❌')) {
             line.classList.add('error');
+            icon = '<i data-feather="alert-circle" style="width:14px; height:14px; color:#ff4d4d;"></i>';
         } else if (message.includes('Success') || message.includes('✅')) {
             line.classList.add('success');
-        }
+            icon = '<i data-feather="check" style="width:14px; height:14px; color:#00e676;"></i>';
+        } else if (message.includes('Flight')) icon = '✈️';
+        else if (message.includes('Cab')) icon = '🚖';
+        else if (message.includes('Hotel')) icon = '🏨';
+        else if (message.includes('Itinerary')) icon = '🗺️';
 
-        line.textContent = message;
+        line.innerHTML = `${icon} <span style="margin-left: 8px;">${message}</span>`;
+        // Re-render feather icons if any added
+        if (line.innerHTML.includes('data-feather')) feather.replace();
+
         consoleOutput.appendChild(line);
 
         if (autoScroll) {
@@ -298,20 +317,109 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showResult(result) {
-        resultArea.classList.remove('hidden');
-        // Simple JSON dump but planned for better UI
-        resultJson.textContent = JSON.stringify(result, null, 2);
+        if (!result) return;
 
-        // Custom views (same as before)
-        if (result && result.flowchart_code) {
-            // Re-render mermaid if it's there
-            // (Logic same as original file, abbreviated here for clarity but keeping functionality)
-            resultJson.innerHTML = '';
-            const mermaidContainer = document.createElement('div');
-            mermaidContainer.className = 'mermaid';
-            mermaidContainer.innerHTML = result.flowchart_code;
-            resultArea.appendChild(mermaidContainer);
-            mermaid.init(undefined, mermaidContainer);
+        resultArea.classList.remove('hidden');
+        resultJson.innerHTML = ''; // Clear raw JSON container
+
+        // 1. Render Trip Plan (Traveller)
+        if (result.flight || result.hotel) {
+            const container = document.createElement('div');
+            container.className = 'trip-result-container';
+
+            // Mermaid Diagram
+            if (result.flowchart_code) {
+                const mmDiv = document.createElement('div');
+                mmDiv.className = 'mermaid-visualizer';
+                mmDiv.innerHTML = result.flowchart_code;
+                container.appendChild(mmDiv);
+            }
+
+            // Cards Grid
+            const cards = document.createElement('div');
+            cards.className = 'trip-cards';
+
+            // Flight Card
+            if (result.flight) {
+                cards.innerHTML += `
+                    <div class="trip-card flight">
+                        <div class="card-icon">✈️</div>
+                        <div class="card-details">
+                            <h4 class="card-title">Flight to ${result.destination || 'Destination'}</h4>
+                            <div class="card-row"><span>Airline:</span> <strong>${result.flight.airline || 'N/A'}</strong></div>
+                            <div class="card-row"><span>Number:</span> <strong>${result.flight.flight_number || 'N/A'}</strong></div>
+                            <div class="card-row"><span>Arrival:</span> <strong>${result.flight.arrival_time || 'N/A'}</strong></div>
+                            <div class="card-prio">${result.flight.price || ''}</div>
+                        </div>
+                    </div>`;
+            }
+
+            // Hotel Card
+            if (result.hotel) {
+                cards.innerHTML += `
+                    <div class="trip-card hotel">
+                        <div class="card-icon">🏨</div>
+                        <div class="card-details">
+                            <h4 class="card-title">Stay at ${result.hotel.name || 'Hotel'}</h4>
+                            <div class="card-row"><span>Address:</span> <small>${result.hotel.address || 'N/A'}</small></div>
+                            <div class="card-prio">${result.hotel.price_per_night || ''} / night</div>
+                        </div>
+                    </div>`;
+            }
+
+            // Cab Card
+            if (result.arrival_cab) {
+                cards.innerHTML += `
+                    <div class="trip-card cab">
+                        <div class="card-icon">🚖</div>
+                        <div class="card-details">
+                            <h4 class="card-title">Arrival Transfer</h4>
+                            <div class="card-row"><span>Provider:</span> <strong>${result.arrival_cab.provider || 'Cab'}</strong></div>
+                            <div class="card-row"><span>Pickup:</span> <strong>${result.arrival_cab.pickup_time || 'N/A'}</strong></div>
+                            <div class="card-prio">${result.arrival_cab.estimated_price || ''}</div>
+                        </div>
+                    </div>`;
+            }
+
+            container.appendChild(cards);
+
+            // Itinerary
+            if (result.daily_schedule && result.daily_schedule.length > 0) {
+                const itContainer = document.createElement('div');
+                itContainer.className = 'itinerary-container';
+                itContainer.innerHTML = '<h4>📅 Daily Itinerary</h4>';
+
+                result.daily_schedule.forEach(day => {
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'itinerary-day';
+                    dayDiv.innerHTML = `<div class="day-header">Day ${day.day_number}</div>`;
+
+                    const acts = document.createElement('ul');
+                    acts.className = 'activity-list';
+                    day.activities.forEach(act => {
+                        acts.innerHTML += `
+                            <li>
+                                <span class="act-time">${act.time}</span>
+                                <span class="act-desc">${act.description}</span>
+                            </li>`;
+                    });
+                    dayDiv.appendChild(acts);
+                    itContainer.appendChild(dayDiv);
+                });
+                container.appendChild(itContainer);
+            }
+
+            // Append all constructed UI
+            resultJson.appendChild(container);
+
+            // Render Mermaid
+            if (result.flowchart_code) {
+                setTimeout(() => mermaid.init(undefined, document.querySelectorAll('.mermaid-visualizer')), 100);
+            }
+
+        } else {
+            // Default Raw View for other agents
+            resultJson.textContent = JSON.stringify(result, null, 2);
         }
     }
 

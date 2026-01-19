@@ -319,9 +319,144 @@
 }
 
 .empty-visual {
-    width: 60px;
-    height: 60px;
-    border: 2px solid rgba(0, 0, 0, 0.1);
-    transform: rotate(45deg);
     margin-bottom: 1rem;
+}
+
+/* --- Trip Result Styling (White Theme) --- */
+.trip-result-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem 0;
+    margin: 0 2.5rem 2.5rem 2.5rem;
+    /* Match log console margins */
+}
+
+.mermaid-visualizer {
+    background: #fff;
+    padding: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    margin-bottom: 2rem;
+}
+
+.trip-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.trip-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+}
+
+.trip-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    border-color: #000;
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.card-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.card-title {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+.card-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.card-row strong {
+    color: #000;
+}
+
+.card-prio {
+    margin-top: auto;
+    align-self: flex-end;
+    font-weight: 700;
+    color: #000;
+    background: #e0f2f1;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.9rem;
+}
+
+/* Itinerary */
+.itinerary-container h4 {
+    font-family: var(--font-heading);
+    color: #000;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #000;
+    display: inline-block;
+}
+
+.itinerary-day {
+    margin-bottom: 2rem;
+    background: #fff;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.day-header {
+    background: #000;
+    padding: 0.8rem 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.activity-list {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.activity-list li {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.activity-list li:last-child {
+    border-bottom: none;
+}
+
+.act-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    color: #000;
+    min-width: 80px;
+    font-size: 0.9rem;
+}
+
+.act-desc {
+    color: #444;
 }
